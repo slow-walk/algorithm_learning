@@ -72,8 +72,36 @@ def merge(nums):
     end = time.perf_counter()
 
     print(nums, f"\nmerge消耗的时间为{end-start}s")
+   
+def fast(nums):
+    def recur(nums):
+        if len(nums) <= 1:
+            return nums
+        base = nums[0:1]
+        small = []
+        big = []
+        result = []
+        for num in nums[1:]:
+            if num < base[0]:
+                small.append(num)
+            elif num > base[0]:
+                big.append(num)
+            else:
+                base.append(num)
+        small = recur(small)
+        big = recur(big)
+        result.extend(small)
+        result.extend(base)
+        result.extend(big)
+        return result
+    start = time.perf_counter()
+    nums = recur(nums)
+    end = time.perf_counter()
+    print(nums, f"\nfast消耗的时间为{end - start}s")
+    
 if __name__ == '__main__':
     bubble(nums)
     choice(nums)
     insert(nums)
     merge(nums)
+    fast(nums)
