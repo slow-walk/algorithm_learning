@@ -1,12 +1,20 @@
 import copy
 import random
+import time
 nums = []
 length = 10000
 for i in range(length):
-    nums.append(random.randint(1, 100000))
+    nums.append(random.randint(1, 2000))
+nums = [i for i in range(length)]
+
+def show_time(func, *args, **kwargs):
+    start = time.perf_counter()
+    result = func(*args, **kwargs)
+    end = time.perf_counter()
+    print(f"{func.__name__}:\n\t结果:{result}\n\t耗时:{end-start}s")
+    return end-start
 
 def bubble(nums):
-    start = time.perf_counter()
     bubble_nums = copy.copy(nums)
     for i in range(0, length):
         temp_i = 0
@@ -14,20 +22,17 @@ def bubble(nums):
             if bubble_nums[temp_i] > bubble_nums[temp_i + 1]:
                 bubble_nums[temp_i], bubble_nums[temp_i + 1] = bubble_nums[temp_i + 1], bubble_nums[temp_i]
             temp_i+=1
-    end = time.perf_counter()
-    print(bubble_nums, f"\nbubble消耗时间：{end-start}s")
+    return bubble_nums
 
 def choice(nums):
-    start = time.perf_counter()
     for i in range(length):
         for j in range(i,length):
             if nums[i] > nums[j]:
                 nums[i], nums[j] = nums[j], nums[i]
-    end = time.perf_counter()
-    print(nums, f"\nchoice消耗时间：{end-start}s")
+    return nums
 
 def insert(nums):
-    start = time.perf_counter()
+    length = len(nums)
     for i in range(1,length):
         temp_j = 0
         for j in range(i):
@@ -35,8 +40,7 @@ def insert(nums):
                 temp_j += 1
         nums.insert(temp_j, nums[i])
         nums.pop(i+1)
-    end = time.perf_counter()
-    print(nums, f"\ninsert消耗时间：{end-start}s")
+    return nums
 
 def merge(nums):
     def sort_sorted(l1,l2):
@@ -67,11 +71,8 @@ def merge(nums):
             return sort_sorted(l1,l2)
         else:
             return input_nums
-    start = time.perf_counter()
     nums = recur_merge(input_nums=nums)
-    end = time.perf_counter()
-
-    print(nums, f"\nmerge消耗的时间为{end-start}s")
+    return nums
    
 def fast(nums):
     def recur(nums):
@@ -94,14 +95,28 @@ def fast(nums):
         result.extend(base)
         result.extend(big)
         return result
-    start = time.perf_counter()
     nums = recur(nums)
-    end = time.perf_counter()
-    print(nums, f"\nfast消耗的时间为{end - start}s")
-    
+    return nums
+
+def shell(nums):
+    gap = int(len(nums)/2)
+    def recur(nums, gap):
+        # 使gap间隔的数组保持有序
+        gap_nums = nums[::gap]
+        gap_nums = insert(gap_nums)
+        for i,num in enumerate(gap_nums):
+            nums[i*gap] = num
+        if gap == 1:
+            return nums
+        else:
+            return recur(nums, int(gap/2))
+    nums = recur(nums, gap)
+    return nums
+
 if __name__ == '__main__':
-    bubble(nums)
-    choice(nums)
-    insert(nums)
-    merge(nums)
-    fast(nums)
+    show_time(bubble, nums)
+    show_time(choice, nums)
+    show_time(insert, nums)
+    show_time(merge, nums)
+    show_time(fast, nums)
+    show_time(shell, nums)
