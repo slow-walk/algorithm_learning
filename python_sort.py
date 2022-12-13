@@ -113,6 +113,22 @@ def shell(nums):
     nums = recur(nums, gap)
     return nums
 
+def Heap(nums):
+    # 制作大顶堆
+    def build_heap(nums):
+        i = len(nums)-1
+        while i>0:
+            if nums[int(i/2)] > nums[i]:
+                nums[int(i/2)], nums[i] = nums[i], nums[int(i/2)]
+            i-=1
+        print(nums)
+        return nums
+    result = []
+    while nums:
+        result.append(build_heap(nums)[0])
+        nums = nums[1:]
+    return nums
+
 if __name__ == '__main__':
     show_time(bubble, nums)
     show_time(choice, nums)
