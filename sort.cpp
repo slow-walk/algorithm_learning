@@ -11,6 +11,7 @@ using namespace std;
 
 #define PRINT_SORTED_NUMS 0
 
+//重载打印运算符，打印vector容器变量
 template <typename T>
 std::ostream& operator<< (std::ostream& out, const std::vector<T>& v){
         if(!v.empty()){
@@ -74,7 +75,7 @@ void test_swap(){
         cout << "交换后：" << input << endl;
 }
 
-void bubble(vector<int> nums){
+void bubble_sort(vector<int> nums){
         int length = nums.size();
         for(int i =0; i<length-1; i++){
                 for(int j=0; j<length-1-i; j++){
@@ -88,7 +89,7 @@ void bubble(vector<int> nums){
         }
 }
 
-void choice(vector<int> nums){
+void choice_sort(vector<int> nums){
         int length = nums.size();
         for(int i=0; i<length; i++){
                 for(int j=i+1; j<length; j++){
@@ -100,10 +101,9 @@ void choice(vector<int> nums){
         if(PRINT_SORTED_NUMS!=0){
                 cout << "选择排序结果：" << nums << endl;
         }
-}
-        
+}    
 
-void insert(vector<int> nums){
+void insert_sort(vector<int> nums){
         int length = nums.size();
         int j;
         for(int i=1; i<length; i++){
@@ -122,14 +122,48 @@ void insert(vector<int> nums){
         if(PRINT_SORTED_NUMS!=0){
                 cout << "插入排序结果：" << nums << endl;
         }
+}        
+
+vector<int> merge_two_sorted(vector<int> &nums1, vector<int> &nums2){
+        vector<int>::iterator point_nums1 = nums1.begin();
+        vector<int>::iterator point_nums2 = nums2.begin();
+        vector<int> result;
+        while(point_nums1<nums1.end()&&point_nums2<nums2.end()){
+                if (*point_nums1<*point_nums2){
+                        result.push_back(*point_nums1);
+                        point_nums1++;
+                }
+                else{
+                        result.push_back(*point_nums2);
+                        point_nums2++;
+                }
+        }
+        if (point_nums1<nums1.end()){
+                result.insert(result.end(), point_nums1, nums1.end());
+        }
+        else{
+                result.insert(result.end(), point_nums2, nums2.end());
+        }
+        return result;
 }
-        
+
+void merge_sort(vector<int> &nums){
+        int length = nums.size();
+        if (length<=1){
+                return ;
+        }
+        vector<int> nums1(nums.begin(), nums.begin()+int(length/2));
+        vector<int> nums2(nums.begin()+int(length/2), nums.end());
+        merge_sort(nums1);
+        merge_sort(nums2);
+        nums = merge_two_sorted(nums1, nums2);
+}
 
 void get_cost_time(void (*func)(vector<int>), vector<int> rand_nums){
         map<void (*)(vector<int>), const char *> func_array;
-        func_array[bubble] = "bubble";
-        func_array[choice] = "choice";
-        func_array[insert] = "insert";
+        func_array[bubble_sort] = "bubble";
+        func_array[choice_sort] = "choice";
+        func_array[insert_sort] = "insert";
 
         clock_t start_time = clock();
         func(rand_nums);
@@ -137,10 +171,24 @@ void get_cost_time(void (*func)(vector<int>), vector<int> rand_nums){
         cout << func_array[func] << "的耗时为" << (end_time-start_time) << "ms" << endl;
 }
 
+void get_cost_time(void (*func)(vector<int> &), vector<int> rand_nums){
+        map<void (*)(vector<int> &), const char *> func_array;
+        func_array[merge_sort] = "merge";
+
+        clock_t start_time = clock();
+        func(rand_nums);
+        clock_t end_time = clock();
+        if(PRINT_SORTED_NUMS!=0){
+                cout << func_array[func] << "排序结果：" << rand_nums << endl;
+        }
+        cout << func_array[func] << "的耗时为" << (end_time-start_time) << "ms" << endl;
+}
+
 int main(){
         vector<int> rand_nums = get_randm_nums();
-        get_cost_time(bubble, rand_nums);
-        get_cost_time(choice, rand_nums);
-        get_cost_time(choice, rand_nums);
+        get_cost_time(bubble_sort, rand_nums);
+        get_cost_time(choice_sort, rand_nums);
+        get_cost_time(insert_sort, rand_nums);
+        get_cost_time(merge_sort, rand_nums);
         return 0;
 }
